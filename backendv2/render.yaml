@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: backendv2
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn mysite.wsgi:application
+    plan: free
