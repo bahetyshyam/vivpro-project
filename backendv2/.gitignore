@@ -24,3 +24,5 @@ __pycache__/
 
 # Gunicorn
 gunicorn.log
+
+.env
