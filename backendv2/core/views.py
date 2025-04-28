@@ -7,6 +7,10 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate, login, logout
+from .pagination import CustomPagination
+from .models import Track, Rating
+from .serializers import TrackWithRatingSerializer
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 def health_check(request):
@@ -53,4 +57,42 @@ def logout_view(request):
 @permission_classes([IsAuthenticated])
 def me_view(request):
     return Response({'username': request.user.username})
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_tracks_paginated(request):
+    title_query = request.GET.get('title', None)
+    paginator = CustomPagination()
+    tracks = Track.objects.all()
+    
+    if title_query:
+        tracks = tracks.filter(title__icontains = title_query)
+        
+    result_page = paginator.paginate_queryset(tracks, request)
+    serializer = TrackWithRatingSerializer(result_page, many=True, context={'request': request})
+    return paginator.get_paginated_response(serializer.data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def rate_track(request, track_id):
+    track = get_object_or_404(Track, track_id=track_id)
+    rating_value = request.data.get('rating')
+
+    # Validate rating value
+    if not rating_value or not (1 <= int(rating_value) <= 5):
+        return Response({'error': 'Rating must be between 1 and 5'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Create or update rating
+    rating_obj, created = Rating.objects.update_or_create(
+        user=request.user,
+        track=track,
+        defaults={'rating': int(rating_value)}
+    )
+
+    action = "created" if created else "updated"
+    return Response({
+        'message': f'Rating {action} successfully',
+        'rating': rating_obj.rating,
+    }, status=status.HTTP_200_OK)
     

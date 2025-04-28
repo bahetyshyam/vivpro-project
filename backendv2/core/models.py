@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+import uuid
 
 class Track(models.Model):
-    track_id = models.CharField(max_length=50, unique=True)
+    track_id = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200)
     danceability = models.FloatField()
     energy = models.FloatField()
@@ -26,6 +27,7 @@ class Track(models.Model):
 
 
 class Rating(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     track = models.ForeignKey(Track, on_delete=models.CASCADE)
     rating = models.IntegerField()  # e.g., 1-5 stars
