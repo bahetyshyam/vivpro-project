@@ -11,22 +11,47 @@ export const TracksList = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [title, setTitle] = useState('');
+  const [sortBy, setSortBy] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
 
   const fetchTracks = async ({
     queryKey,
   }: {
-    queryKey: [string, { page: number; limit: number; title: string }];
+    queryKey: [
+      string,
+      {
+        page: number;
+        limit: number;
+        title: string;
+        sortBy: string | null;
+        sortOrder: 'asc' | 'desc' | null;
+      }
+    ];
   }) => {
-    const [, { page, limit, title }] = queryKey;
+    const [, { page, limit, title, sortBy, sortOrder }] = queryKey;
     const response = await axios.get<TrackResponse>('/tracks', {
-      params: { page, limit, title },
+      params: { page, limit, title, sort_by: sortBy, sort_order: sortOrder },
     });
     return response.data;
   };
 
+  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
+    if (sorter.order) {
+      console.log(sorter.order, sorter.field);
+      setSortBy(sorter.field);
+      setSortOrder(sorter.order === 'ascend' ? 'asc' : 'desc');
+    } else {
+      setSortBy(null);
+      setSortOrder(null);
+    }
+  };
+
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['tracks', { page, limit, title }],
-    queryFn: fetchTracks,
+    queryKey: ['tracks', { page, limit, title, sortBy, sortOrder }],
+    queryFn: () =>
+      fetchTracks({
+        queryKey: ['tracks', { page, limit, title, sortBy, sortOrder }],
+      }),
   });
 
   const handleSearch = (value: string) => {
@@ -56,102 +81,119 @@ export const TracksList = () => {
       dataIndex: 'title',
       key: 'title',
       width: 200,
+      sorter: true,
     },
     {
       title: 'Danceability',
       dataIndex: 'danceability',
       key: 'danceability',
       width: 150,
+      sorter: true,
     },
     {
       title: 'Energy',
       dataIndex: 'energy',
       key: 'energy',
       width: 150,
+      sorter: true,
     },
     {
       title: 'Loudness',
       dataIndex: 'loudness',
       key: 'loudness',
       width: 150,
+      sorter: true,
     },
     {
       title: 'Mode',
       dataIndex: 'mode',
       key: 'mode',
       width: 100,
+      sorter: true,
     },
     {
       title: 'Acousticness',
       dataIndex: 'acousticness',
       key: 'acousticness',
       width: 150,
+      sorter: true,
     },
     {
       title: 'Instrumentalness',
       dataIndex: 'instrumentalness',
       key: 'instrumentalness',
       width: 200,
+      sorter: true,
     },
     {
       title: 'Liveness',
       dataIndex: 'liveness',
       key: 'liveness',
       width: 150,
+      sorter: true,
     },
     {
       title: 'Valence',
       dataIndex: 'valence',
       key: 'valence',
       width: 150,
+      sorter: true,
     },
     {
       title: 'Tempo',
       dataIndex: 'tempo',
       key: 'tempo',
       width: 150,
+      sorter: true,
     },
     {
       title: 'Duration (ms)',
       dataIndex: 'duration_ms',
       key: 'duration_ms',
       width: 200,
+      sorter: true,
     },
     {
       title: 'Time Signature',
       dataIndex: 'time_signature',
       key: 'time_signature',
-      width: 150,
+      width: 180,
+      sorter: true,
     },
     {
       title: 'Number of Bars',
       dataIndex: 'num_bars',
       key: 'num_bars',
-      width: 150,
+      width: 180,
+      sorter: true,
     },
     {
       title: 'Number of Sections',
       dataIndex: 'num_sections',
       key: 'num_sections',
       width: 200,
+      sorter: true,
     },
     {
       title: 'Number of Segments',
       dataIndex: 'num_segments',
       key: 'num_segments',
       width: 200,
+      sorter: true,
     },
     {
       title: 'Track Class',
       dataIndex: 'track_class',
       key: 'track_class',
       width: 150,
+      sorter: true,
     },
     {
       title: 'User Rating',
       dataIndex: 'user_rating',
       key: 'user_rating',
       width: 180,
+      sorter: true,
       render: (rating: number | null, record: { track_id: string }) => (
         <Rate
           value={rating || 0}
@@ -171,9 +213,6 @@ export const TracksList = () => {
       ...track,
       user_rating: track.user_rating || 0, // Ensure user_rating is not null
     })) || [];
-
-  console.log('Headers:', downloadHeaders);
-  console.log('Data:', downloadData);
 
   return (
     <div
@@ -220,8 +259,9 @@ export const TracksList = () => {
             total: data?.count,
             onChange: handlePaginationChange,
           }}
+          onChange={handleTableChange}
           scroll={{ y: 400, x: 'max-content' }} // Fixed height and scrollable content
-          style={{ minHeight: '400px' }}
+          style={{ minHeight: '500px' }}
         />
       )}
     </div>
