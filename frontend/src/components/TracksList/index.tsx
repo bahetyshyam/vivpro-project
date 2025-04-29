@@ -1,58 +1,24 @@
-import { useState } from 'react';
 import { Input, Table, Rate, Button } from 'antd';
-import { useQuery } from '@tanstack/react-query';
-import { axios } from '../../api/axios';
-import { TrackResponse } from './types';
+import { useUpdateRating } from './useUpdateRating';
 import { CSVLink } from 'react-csv';
+import { Charts } from '../Charts';
+import { useTracksState } from './useTracksState';
+import { useGetTracks } from './useGetTracks';
 
 const { Search } = Input;
 
 export const TracksList = () => {
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [title, setTitle] = useState('');
-  const [sortBy, setSortBy] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
+  const { state, setPage, setLimit, setTitle, setSort } = useTracksState();
+  const { data, isLoading, isError } = useGetTracks(state);
 
-  const fetchTracks = async ({
-    queryKey,
-  }: {
-    queryKey: [
-      string,
-      {
-        page: number;
-        limit: number;
-        title: string;
-        sortBy: string | null;
-        sortOrder: 'asc' | 'desc' | null;
-      }
-    ];
-  }) => {
-    const [, { page, limit, title, sortBy, sortOrder }] = queryKey;
-    const response = await axios.get<TrackResponse>('/tracks', {
-      params: { page, limit, title, sort_by: sortBy, sort_order: sortOrder },
-    });
-    return response.data;
-  };
-
-  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleTableChange = (_pagination: any, _filters: any, sorter: any) => {
     if (sorter.order) {
-      console.log(sorter.order, sorter.field);
-      setSortBy(sorter.field);
-      setSortOrder(sorter.order === 'ascend' ? 'asc' : 'desc');
+      setSort(sorter.field, sorter.order === 'ascend' ? 'asc' : 'desc');
     } else {
-      setSortBy(null);
-      setSortOrder(null);
+      setSort(null, null);
     }
   };
-
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['tracks', { page, limit, title, sortBy, sortOrder }],
-    queryFn: () =>
-      fetchTracks({
-        queryKey: ['tracks', { page, limit, title, sortBy, sortOrder }],
-      }),
-  });
 
   const handleSearch = (value: string) => {
     setTitle(value);
@@ -65,14 +31,14 @@ export const TracksList = () => {
     setTitle(''); // Clear search when changing pagination
   };
 
-  const handleRatingChange = async (trackId: string, rating: number) => {
-    try {
-      await axios.post(`/tracks/${trackId}/rate`, { rating });
-      // Optionally refetch the data to reflect the updated rating
-      refetch();
-    } catch (error) {
-      console.error('Failed to update rating:', error);
+  const mutation = useUpdateRating(state);
+
+  const handleRatingChange = (trackId: string, rating: number) => {
+    if (rating < 1 || rating > 5) {
+      console.error('Rating must be between 1 and 5');
+      return;
     }
+    mutation.mutate({ trackId, rating });
   };
 
   const columns = [
@@ -215,31 +181,18 @@ export const TracksList = () => {
     })) || [];
 
   return (
-    <div
-      style={{
-        padding: '20px',
-        background: '#fff',
-        borderRadius: '8px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginBottom: '20px',
-        }}
-      >
+    <div className="tracks-list-container">
+      <div className="tracks-list-header">
         <Search
           placeholder="Search by title"
           onSearch={handleSearch}
           enterButton
-          style={{ width: '70%' }}
+          className="tracks-list-search"
         />
         <CSVLink
           data={downloadData}
           headers={downloadHeaders}
-          filename={`tracks_page_${page}.csv`}
+          filename={`tracks_page_${state.page}.csv`}
         >
           <Button type="primary">Download CSV</Button>
         </CSVLink>
@@ -254,16 +207,18 @@ export const TracksList = () => {
             []
           }
           pagination={{
-            current: page,
-            pageSize: limit,
+            current: state.page,
+            pageSize: state.limit,
             total: data?.count,
             onChange: handlePaginationChange,
           }}
           onChange={handleTableChange}
-          scroll={{ y: 400, x: 'max-content' }} // Fixed height and scrollable content
-          style={{ minHeight: '500px' }}
+          scroll={{ y: 400, x: 'max-content' }}
+          className="tracks-list-table"
         />
       )}
+
+      <Charts data={data?.results || []} />
     </div>
   );
 };
