@@ -1,6 +1,7 @@
-import { Layout, Row, Col, Button } from "antd";
-import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Layout, Row, Col, Button } from 'antd';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { TracksList } from '../components/TracksList/index';
 const { Header, Content } = Layout;
 
 const DashboardPage = () => {
@@ -9,46 +10,45 @@ const DashboardPage = () => {
 
   const handleLogout = async () => {
     await logout();
-    navigate("/login");
+    navigate('/login');
   };
 
   return (
-    <Layout style={{ minHeight: "100vh", width: "100%" }}>
+    <Layout style={{ minHeight: '100vh', width: '100%' }}>
       <Header
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          background: "#001529",
-          color: "#fff",
-          padding: "0 20px",
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          background: '#001529',
+          color: '#fff',
+          padding: '0 20px',
         }}
       >
-        <div style={{ fontSize: "20px" }}>Hello {user?.username}</div>
+        <div style={{ fontSize: '20px' }}>Hello {user?.username}</div>
         <Button
           type="primary"
           onClick={handleLogout}
-          style={{ background: "#ff4d4f", borderColor: "#ff4d4f" }}
+          style={{ background: '#ff4d4f', borderColor: '#ff4d4f' }}
         >
           Logout
         </Button>
       </Header>
-      <Content style={{ padding: "20px", width: "100%", height: "100%" }}>
+      <Content style={{ padding: '20px', width: '100%', height: '100%' }}>
         <Row gutter={[16, 16]}>
           <Col
             span={24}
-            style={{ background: "#fff", padding: "20px", minHeight: "200px" }}
+            style={{ background: '#fff', padding: '20px', minHeight: '200px' }}
           >
-            {/* Placeholder for table */}
-            Table Section
+            <TracksList />
           </Col>
           <Col
             span={24}
             style={{
-              background: "#fff",
-              padding: "20px",
-              minHeight: "200px",
-              marginTop: "20px",
+              background: '#fff',
+              padding: '20px',
+              minHeight: '200px',
+              marginTop: '20px',
             }}
           >
             {/* Placeholder for charts */}
