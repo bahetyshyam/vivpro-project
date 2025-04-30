@@ -144,13 +144,16 @@ REST_FRAMEWORK = {
     ),
 }
 
-CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True  # Ensure cookies are sent only over HTTPS
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True 
 
 CORS_ALLOW_ALL_ORIGINS = True  
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
-    'https://vivpro.shyambahety.com/'
+    'https://vivpro.shyambahety.com'
 ]
 ALLOWED_HOSTS = ['vivpro-project-django.onrender.com', 'localhost', '127.0.0.1', 'vivpro.shyambahety.com']
