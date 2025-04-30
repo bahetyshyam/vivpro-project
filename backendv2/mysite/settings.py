@@ -27,8 +27,6 @@ SECRET_KEY = 'django-insecure-kxlrgs(5um0e7mwc&3a-@)2sh!acbb@9r$rkm^%8eo!7kcf$v1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['vivpro-project-django.onrender.com', 'localhost', '127.0.0.1']
-
 
 # Application definition
 
@@ -155,3 +153,4 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5173',
     'https://vivpro.shyambahety.com/'
 ]
+ALLOWED_HOSTS = ['vivpro-project-django.onrender.com', 'localhost', '127.0.0.1', 'vivpro.shyambahety.com']
