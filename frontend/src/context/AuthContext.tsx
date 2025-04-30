@@ -5,8 +5,13 @@ import {
   ReactNode,
   useEffect,
 } from 'react';
-
-import { axios } from '../api/axios';
+import {
+  checkCurrentUserFromAuth,
+  loginUser,
+  logoutUser,
+  registerUser,
+} from '../api/auth';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface AuthContextType {
   user: { username: string } | null;
@@ -21,27 +26,37 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<{ username: string } | null>(null);
   const [isFetchingUserInfo, setIsFetchingUserInfo] = useState(true);
+  const queryClient = useQueryClient();
 
   const login = async (username: string, password: string) => {
-    await axios.post('/login', { username, password });
-    setUser({ username: username });
+    const response = await loginUser(username, password);
+    if (!response || !response.username) {
+      throw new Error('Login failed: Invalid response from server');
+    }
+    setUser(response);
   };
 
   const logout = async () => {
-    await axios.post('/logout');
+    await logoutUser();
+    queryClient.clear(); // Clear the query cache to ensure no stale data remain
     setUser(null);
   };
 
   const register = async (username: string, password: string) => {
-    await axios.post('/register', { username, password });
-    await login(username, password); // Automatically login after registration
+    await registerUser(username, password);
+    if (!username || !password) {
+      throw new Error(
+        'Registration failed: Username and password are required'
+      );
+    }
+    await login(username, password);
   };
 
   const checkAuth = async () => {
     try {
       setIsFetchingUserInfo(true);
-      const response = await axios.get('/me');
-      setUser(response.data);
+      const response = await checkCurrentUserFromAuth();
+      setUser(response);
     } catch {
       setUser(null);
     } finally {

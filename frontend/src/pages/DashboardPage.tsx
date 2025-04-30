@@ -2,6 +2,7 @@ import { Layout, Row, Col, Button } from 'antd';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { TracksList } from '../components/TracksList/index';
+import { ROUTES } from '../constants/routes';
 const { Header, Content } = Layout;
 
 const DashboardPage = () => {
@@ -10,21 +11,12 @@ const DashboardPage = () => {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    navigate(ROUTES.LOGIN);
   };
 
   return (
-    <Layout style={{ minHeight: '100vh', width: '100%' }}>
-      <Header
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          background: '#001529',
-          color: '#fff',
-          padding: '0 20px',
-        }}
-      >
+    <Layout className="layout">
+      <Header className="header">
         <div style={{ fontSize: '20px' }}>Hello {user?.username}</div>
         <Button
           type="primary"
@@ -34,23 +26,12 @@ const DashboardPage = () => {
           Logout
         </Button>
       </Header>
-      <Content style={{ padding: '20px', width: '100%', height: '100%' }}>
+      <Content className="content">
         <Row gutter={[16, 16]}>
-          <Col
-            span={24}
-            style={{ background: '#fff', padding: '20px', minHeight: '200px' }}
-          >
+          <Col className="col">
             <TracksList />
           </Col>
-          <Col
-            span={24}
-            style={{
-              background: '#fff',
-              padding: '20px',
-              minHeight: '200px',
-              marginTop: '20px',
-            }}
-          >
+          <Col className="col col-margin">
             {/* Placeholder for charts */}
             Charts Section
           </Col>

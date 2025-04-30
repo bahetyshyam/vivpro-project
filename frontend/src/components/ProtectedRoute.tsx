@@ -1,17 +1,18 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Spin } from 'antd';
+import { ROUTES } from '../constants/routes';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isFetchingUserInfo } = useAuth();
 
   if (isFetchingUserInfo) {
-    // ToDo add a spinner or loading indicator
-    return <div>Loading...</div>;
+    return <Spin size="large" className="spin-center" />;
   }
 
   if (!user?.username) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={ROUTES.LOGIN} replace />;
   }
 
   return children;
