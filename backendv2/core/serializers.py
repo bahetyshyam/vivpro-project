@@ -15,7 +15,5 @@ class TrackWithRatingSerializer(serializers.ModelSerializer):
         ]
 
     def get_user_rating(self, obj):
-        user = self.context.get('request').user
-        rating = Rating.objects.filter(user=user, track=obj).first()
-        return rating.rating if rating else None
+        return obj.user_rating
     
