@@ -29,7 +29,6 @@ export const useUpdateRating = (tracksState: TracksState) => {
       queryClient.setQueryData(
         getQueryKey(tracksState),
         (oldData: TrackResponse) => {
-          console.log(oldData);
           if (!oldData) return oldData;
           return {
             ...oldData,

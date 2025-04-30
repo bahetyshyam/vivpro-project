@@ -47,18 +47,32 @@ const AuthPage = () => {
             className="auth-alert"
           />
         )}
-        <Form onFinish={onFinish}>
+        <Form onFinish={onFinish} validateTrigger={['onSubmit']}>
           <Form.Item
             label="Username"
             name="username"
-            rules={[{ required: true, message: 'Please input your username!' }]}
+            validateTrigger="onFinish"
+            rules={[
+              { required: true, message: 'Please input your username!' },
+              { min: 5, message: 'Username must be at least 5 characters!' },
+              { max: 15, message: 'Username cannot exceed 15 characters!' },
+              { whitespace: true, message: 'Username cannot be empty spaces!' },
+              { transform: (value) => value?.trim() },
+            ]}
           >
             <Input placeholder="Enter your username" />
           </Form.Item>
           <Form.Item
             label="Password"
             name="password"
-            rules={[{ required: true, message: 'Please input your password!' }]}
+            validateTrigger="onFinish"
+            rules={[
+              { required: true, message: 'Please input your password!' },
+              { min: 5, message: 'Password must be at least 5 characters!' },
+              { max: 15, message: 'Password cannot exceed 15 characters!' },
+              { whitespace: true, message: 'Password cannot be empty spaces!' },
+              { transform: (value) => value?.trim() },
+            ]}
           >
             <Input.Password placeholder="Enter your password" />
           </Form.Item>

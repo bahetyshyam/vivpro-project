@@ -25,12 +25,8 @@ const DashboardPage = () => {
   return (
     <Layout className="layout">
       <Header className="header">
-        <div style={{ fontSize: '20px' }}>Hello {user?.username}</div>
-        <Button
-          type="primary"
-          onClick={handleLogout}
-          style={{ background: '#ff4d4f', borderColor: '#ff4d4f' }}
-        >
+        <div className="font-size-20">Hello {user?.username}</div>
+        <Button type="primary" danger onClick={handleLogout}>
           Logout
         </Button>
       </Header>

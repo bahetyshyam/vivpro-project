@@ -60,7 +60,7 @@ export const TracksList = ({ onStateChange }: IProps) => {
   const downloadData =
     data?.results.map((track) => ({
       ...track,
-      user_rating: track.user_rating || 0, // Ensure user_rating is not null
+      user_rating: track.user_rating || 0,
     })) || [];
 
   return (

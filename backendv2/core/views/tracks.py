@@ -54,7 +54,7 @@ def get_tracks_paginated(request):
         tracks = tracks.order_by(sort_by)
 
     result_page = paginator.paginate_queryset(tracks, request)
-    serializer = TrackWithRatingSerializer(result_page, many=True, context={'request': request})
+    serializer = TrackWithRatingSerializer(result_page, many=True)
     return paginator.get_paginated_response(serializer.data)
 
 @api_view(['POST'])
