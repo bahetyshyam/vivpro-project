@@ -1,15 +1,27 @@
-import { Input, Table, Rate, Button } from 'antd';
+import { Input, Table, Button } from 'antd';
 import { useUpdateRating } from './useUpdateRating';
 import { CSVLink } from 'react-csv';
-import { Charts } from '../Charts';
-import { useTracksState } from './useTracksState';
+import { TracksState, useTracksState } from './useTracksState';
 import { useGetTracks } from './useGetTracks';
+import { useEffect } from 'react';
+import { getColumns } from './columnsConfig';
 
 const { Search } = Input;
 
-export const TracksList = () => {
+type IProps = {
+  onStateChange?: (_state: TracksState) => void;
+};
+
+export const TracksList = ({ onStateChange }: IProps) => {
   const { state, setPage, setLimit, setTitle, setSort } = useTracksState();
   const { data, isLoading, isError } = useGetTracks(state);
+  const mutation = useUpdateRating(state);
+
+  useEffect(() => {
+    if (onStateChange) {
+      onStateChange(state);
+    }
+  }, [state, onStateChange]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleTableChange = (_pagination: any, _filters: any, sorter: any) => {
@@ -31,8 +43,6 @@ export const TracksList = () => {
     setTitle(''); // Clear search when changing pagination
   };
 
-  const mutation = useUpdateRating(state);
-
   const handleRatingChange = (trackId: string, rating: number) => {
     if (rating < 1 || rating > 5) {
       console.error('Rating must be between 1 and 5');
@@ -41,133 +51,7 @@ export const TracksList = () => {
     mutation.mutate({ trackId, rating });
   };
 
-  const columns = [
-    {
-      title: 'Title',
-      dataIndex: 'title',
-      key: 'title',
-      width: 200,
-      sorter: true,
-    },
-    {
-      title: 'Danceability',
-      dataIndex: 'danceability',
-      key: 'danceability',
-      width: 150,
-      sorter: true,
-    },
-    {
-      title: 'Energy',
-      dataIndex: 'energy',
-      key: 'energy',
-      width: 150,
-      sorter: true,
-    },
-    {
-      title: 'Loudness',
-      dataIndex: 'loudness',
-      key: 'loudness',
-      width: 150,
-      sorter: true,
-    },
-    {
-      title: 'Mode',
-      dataIndex: 'mode',
-      key: 'mode',
-      width: 100,
-      sorter: true,
-    },
-    {
-      title: 'Acousticness',
-      dataIndex: 'acousticness',
-      key: 'acousticness',
-      width: 150,
-      sorter: true,
-    },
-    {
-      title: 'Instrumentalness',
-      dataIndex: 'instrumentalness',
-      key: 'instrumentalness',
-      width: 200,
-      sorter: true,
-    },
-    {
-      title: 'Liveness',
-      dataIndex: 'liveness',
-      key: 'liveness',
-      width: 150,
-      sorter: true,
-    },
-    {
-      title: 'Valence',
-      dataIndex: 'valence',
-      key: 'valence',
-      width: 150,
-      sorter: true,
-    },
-    {
-      title: 'Tempo',
-      dataIndex: 'tempo',
-      key: 'tempo',
-      width: 150,
-      sorter: true,
-    },
-    {
-      title: 'Duration (ms)',
-      dataIndex: 'duration_ms',
-      key: 'duration_ms',
-      width: 200,
-      sorter: true,
-    },
-    {
-      title: 'Time Signature',
-      dataIndex: 'time_signature',
-      key: 'time_signature',
-      width: 180,
-      sorter: true,
-    },
-    {
-      title: 'Number of Bars',
-      dataIndex: 'num_bars',
-      key: 'num_bars',
-      width: 180,
-      sorter: true,
-    },
-    {
-      title: 'Number of Sections',
-      dataIndex: 'num_sections',
-      key: 'num_sections',
-      width: 200,
-      sorter: true,
-    },
-    {
-      title: 'Number of Segments',
-      dataIndex: 'num_segments',
-      key: 'num_segments',
-      width: 200,
-      sorter: true,
-    },
-    {
-      title: 'Track Class',
-      dataIndex: 'track_class',
-      key: 'track_class',
-      width: 150,
-      sorter: true,
-    },
-    {
-      title: 'User Rating',
-      dataIndex: 'user_rating',
-      key: 'user_rating',
-      width: 180,
-      sorter: true,
-      render: (rating: number | null, record: { track_id: string }) => (
-        <Rate
-          value={rating || 0}
-          onChange={(value) => handleRatingChange(record.track_id, value)}
-        />
-      ),
-    },
-  ];
+  const columns = getColumns(handleRatingChange);
 
   const downloadHeaders = columns.map((col) => ({
     label: col.title,
@@ -181,7 +65,7 @@ export const TracksList = () => {
     })) || [];
 
   return (
-    <div className="tracks-list-container">
+    <div className="section-container">
       <div className="tracks-list-header">
         <Search
           placeholder="Search by title"
@@ -217,8 +101,6 @@ export const TracksList = () => {
           className="tracks-list-table"
         />
       )}
-
-      <Charts data={data?.results || []} />
     </div>
   );
 };

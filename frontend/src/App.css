@@ -6,7 +6,8 @@
   text-align: center;
 }
 
-.tracks-list-container {
+.section-container {
+  width: 100%;
   padding: 20px;
   background: #fff;
   border-radius: 8px;
@@ -79,8 +80,6 @@
 
 .col {
   background: #fff;
-  padding: 20px;
-  min-height: 200px;
 }
 
 .col-margin {
@@ -91,4 +90,12 @@
   display: block;
   margin: auto;
   margin-top: 20%;
+}
+
+.margin-top-20 {
+  margin-top: 20px;
+}
+
+.padding-20 {
+  padding: 20px;
 }

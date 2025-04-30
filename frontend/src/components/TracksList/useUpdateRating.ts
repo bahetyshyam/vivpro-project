@@ -54,8 +54,7 @@ export const useUpdateRating = (tracksState: TracksState) => {
       }
       console.error('Failed to update rating:', error);
     },
-    onSuccess: () => {
-      // Refetch the data to ensure consistency
+    onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: getQueryKey(tracksState),
       });

@@ -24,7 +24,7 @@ type TracksAction =
       payload: { sortBy: string | null; sortOrder: 'asc' | 'desc' | null };
     };
 
-const initialState: TracksState = {
+export const initialState: TracksState = {
   page: 1,
   limit: 10,
   title: '',
