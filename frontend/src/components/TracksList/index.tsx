@@ -40,7 +40,6 @@ export const TracksList = ({ onStateChange }: IProps) => {
   const handlePaginationChange = (newPage: number, newLimit: number) => {
     setPage(newPage);
     setLimit(newLimit);
-    setTitle(''); // Clear search when changing pagination
   };
 
   const handleRatingChange = (trackId: string, rating: number) => {
